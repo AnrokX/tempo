@@ -15,6 +15,14 @@ class Database:
         self.db_path = Path(db_path)
         self.conn = None
     
+    def __enter__(self):
+        """Context manager entry."""
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit - ensure connection is closed."""
+        self.close()
+    
     def initialize(self):
         """Create database schema if it doesn't exist."""
         self.conn = sqlite3.connect(self.db_path)
@@ -162,4 +170,9 @@ class Database:
     def close(self):
         """Close database connection."""
         if self.conn:
-            self.conn.close()
+            try:
+                self.conn.close()
+            except:
+                pass
+            finally:
+                self.conn = None

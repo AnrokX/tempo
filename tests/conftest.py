@@ -16,9 +16,30 @@ def temp_database():
     
     yield db_path
     
-    # Cleanup
+    # Cleanup - Force close any lingering connections
+    # This is needed on Windows where file locks are stricter
+    import gc
+    import sys
+    gc.collect()  # Force garbage collection to close any lingering connections
+    
+    # Now delete the file with retries for Windows
     if db_path.exists():
-        db_path.unlink()
+        import time
+        # Retry a few times on Windows in case of lingering locks
+        for attempt in range(5):
+            try:
+                db_path.unlink()
+                break
+            except PermissionError as e:
+                if attempt < 4:
+                    time.sleep(0.2)  # Wait a bit longer
+                else:
+                    # Last attempt - on Windows, we might need to accept this
+                    if sys.platform == 'win32':
+                        # Windows sometimes holds locks even after close
+                        print(f"Warning: Could not delete {db_path} on Windows: {e}")
+                    else:
+                        raise
 
 
 @pytest.fixture
