@@ -7,8 +7,8 @@ import json
 from pathlib import Path
 from datetime import datetime, timedelta
 import os
-import signal
 import sys
+import signal
 
 
 # Configuration
@@ -60,11 +60,19 @@ def stop_tracking():
         with open(PID_FILE, 'r') as f:
             pid = int(f.read())
         
-        # Send termination signal
-        os.kill(pid, signal.SIGTERM)
+        # Send termination signal (cross-platform)
+        if sys.platform == "win32":
+            # On Windows, use SIGTERM if available, otherwise use signal 15
+            import signal
+            term_signal = getattr(signal, 'SIGTERM', 15)
+        else:
+            # On Unix-like systems, use SIGTERM
+            term_signal = signal.SIGTERM
+            
+        os.kill(pid, term_signal)
         PID_FILE.unlink(missing_ok=True)
         return True
-    except (ProcessLookupError, ValueError):
+    except (ProcessLookupError, ValueError, OSError):
         PID_FILE.unlink(missing_ok=True)
         return False
 
