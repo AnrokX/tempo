@@ -99,7 +99,7 @@ src/
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/tempo.git
+git clone https://github.com/AnrokX/tempo.git
 cd tempo
 
 # Install Tempo (coming soon)
