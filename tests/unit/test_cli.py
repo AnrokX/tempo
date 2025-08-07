@@ -7,6 +7,7 @@ from click.testing import CliRunner
 from unittest.mock import patch, MagicMock
 import json
 from pathlib import Path
+from src.cli import cli
 
 
 class TestCLI:
@@ -14,8 +15,6 @@ class TestCLI:
     
     def test_cli_can_be_invoked(self):
         """Test that CLI can be invoked without errors."""
-        from src.cli import cli
-        
         runner = CliRunner()
         result = runner.invoke(cli, ['--help'])
         
@@ -24,8 +23,6 @@ class TestCLI:
     
     def test_start_command_begins_tracking(self):
         """Test that 'tempo start' begins tracking."""
-        from src.cli import cli
-        
         runner = CliRunner()
         
         with patch('src.cli.start_tracking') as mock_start:
@@ -38,8 +35,6 @@ class TestCLI:
     
     def test_stop_command_stops_tracking(self):
         """Test that 'tempo stop' stops tracking."""
-        from src.cli import cli
-        
         runner = CliRunner()
         
         with patch('src.cli.is_tracking_running') as mock_running, \
@@ -54,8 +49,6 @@ class TestCLI:
     
     def test_status_command_shows_tracking_status(self):
         """Test that 'tempo status' shows current status."""
-        from src.cli import cli
-        
         runner = CliRunner()
         
         with patch('src.cli.get_tracker_status') as mock_status:
@@ -73,8 +66,6 @@ class TestCLI:
     
     def test_today_command_shows_daily_summary(self):
         """Test that 'tempo today' shows today's activity."""
-        from src.cli import cli
-        
         runner = CliRunner()
         
         with patch('src.cli.get_today_summary') as mock_today:
@@ -96,8 +87,6 @@ class TestCLI:
     @patch('src.cli.is_tracking_running')
     def test_start_prevents_double_start(self, mock_is_running):
         """Test that start command prevents double starting."""
-        from src.cli import cli
-        
         runner = CliRunner()
         mock_is_running.return_value = True
         
@@ -109,8 +98,6 @@ class TestCLI:
     @patch('src.cli.is_tracking_running')
     def test_stop_when_not_running(self, mock_is_running):
         """Test that stop command handles when not running."""
-        from src.cli import cli
-        
         runner = CliRunner()
         mock_is_running.return_value = False
         
