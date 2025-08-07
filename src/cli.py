@@ -185,5 +185,125 @@ def today():
     click.echo("")
 
 
+@cli.group()
+def export():
+    """Export tracking data in various formats."""
+    pass
+
+
+@export.command('csv')
+@click.option('--output', '-o', type=click.Path(), required=True, help='Output file path')
+@click.option('--start', type=str, help='Start date (YYYY-MM-DD)')
+@click.option('--end', type=str, help='End date (YYYY-MM-DD)')
+def export_csv(output, start, end):
+    """Export data to CSV format."""
+    try:
+        from src.core.export import DataExporter
+        
+        if not DB_PATH.exists():
+            click.echo("No tracking data found.")
+            return
+        
+        exporter = DataExporter(DB_PATH)
+        
+        # Parse dates if provided
+        start_time = None
+        end_time = None
+        if start:
+            start_time = datetime.strptime(start, '%Y-%m-%d').timestamp()
+        if end:
+            end_time = datetime.strptime(end, '%Y-%m-%d').timestamp()
+        
+        output_path = Path(output)
+        if exporter.export_to_csv(output_path, start_time, end_time):
+            click.echo(f"Data exported to {output_path}")
+        else:
+            click.echo("Export failed.", err=True)
+            
+    except Exception as e:
+        click.echo(f"Error: {str(e)}", err=True)
+
+
+@export.command('json')
+@click.option('--output', '-o', type=click.Path(), required=True, help='Output file path')
+@click.option('--start', type=str, help='Start date (YYYY-MM-DD)')
+@click.option('--end', type=str, help='End date (YYYY-MM-DD)')
+def export_json(output, start, end):
+    """Export data to JSON format."""
+    try:
+        from src.core.export import DataExporter
+        
+        if not DB_PATH.exists():
+            click.echo("No tracking data found.")
+            return
+        
+        exporter = DataExporter(DB_PATH)
+        
+        # Parse dates if provided
+        start_time = None
+        end_time = None
+        if start:
+            start_time = datetime.strptime(start, '%Y-%m-%d').timestamp()
+        if end:
+            end_time = datetime.strptime(end, '%Y-%m-%d').timestamp()
+        
+        output_path = Path(output)
+        if exporter.export_to_json(output_path, start_time, end_time):
+            click.echo(f"Data exported to {output_path}")
+        else:
+            click.echo("Export failed.", err=True)
+            
+    except Exception as e:
+        click.echo(f"Error: {str(e)}", err=True)
+
+
+@cli.command()
+@click.option('--output', '-o', type=click.Path(), required=True, help='Backup file path')
+def backup(output):
+    """Create a backup of the database."""
+    try:
+        from src.core.export import DataExporter
+        
+        if not DB_PATH.exists():
+            click.echo("No database to backup.")
+            return
+        
+        exporter = DataExporter(DB_PATH)
+        output_path = Path(output)
+        
+        if exporter.backup_database(output_path):
+            click.echo(f"Database backed up to {output_path}")
+        else:
+            click.echo("Backup failed.", err=True)
+            
+    except Exception as e:
+        click.echo(f"Error: {str(e)}", err=True)
+
+
+@cli.command()
+@click.option('--input', '-i', 'input_file', type=click.Path(exists=True), required=True, help='Backup file to restore')
+def restore(input_file):
+    """Restore database from backup."""
+    try:
+        from src.core.export import DataExporter
+        
+        backup_path = Path(input_file)
+        
+        if DB_PATH.exists():
+            if not click.confirm("This will overwrite existing data. Continue?"):
+                return
+        
+        ensure_config_dir()
+        exporter = DataExporter(DB_PATH)
+        
+        if exporter.restore_database(backup_path):
+            click.echo(f"Database restored from {backup_path}")
+        else:
+            click.echo("Restore failed.", err=True)
+            
+    except Exception as e:
+        click.echo(f"Error: {str(e)}", err=True)
+
+
 if __name__ == '__main__':
     cli()
