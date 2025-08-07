@@ -13,6 +13,9 @@ Thumbs.db
 *.code-workspace
 .claude/
 
+# Documentation (local only)
+EXAMPLE.MD
+
 # Python
 __pycache__/
 *.py[cod]
