@@ -267,10 +267,17 @@ class TestDataExporter:
     
     def test_export_handles_invalid_path(self):
         """Test export handles invalid output path."""
+        import sys
         db_path = Path("/tmp/test.db")
         exporter = DataExporter(db_path)
         
-        invalid_path = Path("/invalid/path/export.csv")
+        # Use platform-specific invalid paths
+        if sys.platform == "win32":
+            # Windows: Use a reserved name that can't be created
+            invalid_path = Path("NUL:/export.csv")
+        else:
+            # Linux/Unix: Use a path with null byte which is invalid
+            invalid_path = Path("/dev/null/not_a_directory/export.csv")
         
         with patch.object(exporter, '_get_sessions_data', return_value=[]):
             result = exporter.export_to_csv(invalid_path)
