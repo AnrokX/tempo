@@ -1,4 +1,16 @@
-# Personal Activity Tracker
+# Tempo
+
+```
+╔════════════════════════════════════════╗
+║  _____ _____ __  __ ____   ___        ║
+║ |_   _| ____|  \/  |  _ \ / _ \       ║
+║   | | |  _| | |\/| | |_) | | | |      ║
+║   | | | |___| |  | |  __/| |_| |      ║
+║   |_| |_____|_|  |_|_|    \___/       ║
+║                                        ║
+║   Your time. Your data. Your rhythm.  ║
+╚════════════════════════════════════════╝
+```
 
 A 100% open-source, lightweight desktop application for tracking computer activity and managing time. Built with privacy, security, and performance as core principles.
 
@@ -83,13 +95,29 @@ src/
   - Windows: `pywin32` for window tracking
   - Linux: `python-xlib` or `subprocess` with `xdotool`
 
-## Installation
+## Quick Start
 
-*Installation instructions will be added as the project develops*
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/tempo.git
+cd tempo
 
-## Usage
+# Install Tempo (coming soon)
+python setup.py install
 
-*Usage instructions will be added as the project develops*
+# Start tracking
+tempo start
+
+# Check your daily rhythm
+tempo today
+
+# See your productivity tempo
+tempo report
+```
+
+## Why Tempo?
+
+**Tempo** helps you understand and optimize your work rhythm. Unlike cloud-based trackers, Tempo respects your privacy by keeping all data local. It's not about tracking every second - it's about finding your optimal productivity tempo.
 
 ## Privacy & Security
 

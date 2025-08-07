@@ -1,11 +1,15 @@
-# Project Roadmap & Development Plan
+# Tempo - Project Roadmap & Development Plan
+
+```
+     Finding your productivity rhythm
+```
 
 ## Project Vision
-Build a lightweight, privacy-focused activity tracker that runs entirely locally, consuming minimal system resources while providing actionable insights into computer usage patterns.
+**Tempo** - A lightweight, privacy-focused activity tracker that runs entirely locally, helping users find their optimal work tempo while consuming minimal system resources.
 
 ## Development Phases
 
-### ✅ Phase 0: Project Setup (Complete)
+### Phase 0: Project Setup (Complete)
 - [x] Initialize git repository
 - [x] Create project structure
 - [x] Define architecture and features
@@ -13,7 +17,7 @@ Build a lightweight, privacy-focused activity tracker that runs entirely locally
 
 ---
 
-### 🚧 Phase 1: Core Tracking Engine (Current)
+### Phase 1: Core Tracking Engine (Current)
 **Goal:** Build the minimal viable tracker that captures application usage
 
 #### Tasks:
@@ -45,11 +49,11 @@ Build a lightweight, privacy-focused activity tracker that runs entirely locally
   - [ ] Status command
   - [ ] Today summary command
 
-**Deliverable:** A working tracker that logs app usage to SQLite database
+**Deliverable:** Tempo v0.1 - A working tracker that logs app usage to SQLite database
 
 ---
 
-### 📋 Phase 2: Data Management & Analytics
+### Phase 2: Data Management & Analytics
 **Goal:** Add intelligence to raw tracking data
 
 #### Tasks:
@@ -80,7 +84,7 @@ Build a lightweight, privacy-focused activity tracker that runs entirely locally
 
 ---
 
-### 💾 Phase 3: Export & Integration
+### Phase 3: Export & Integration
 **Goal:** Make data portable and integrable
 
 #### Tasks:
@@ -106,7 +110,7 @@ Build a lightweight, privacy-focused activity tracker that runs entirely locally
 
 ---
 
-### 🖥️ Phase 4: Simple GUI
+### Phase 4: Simple GUI
 **Goal:** User-friendly interface for non-technical users
 
 #### GUI Design Principles:
@@ -149,7 +153,7 @@ Build a lightweight, privacy-focused activity tracker that runs entirely locally
 
 ---
 
-### 🎯 Phase 5: Advanced Features
+### Phase 5: Advanced Features
 **Goal:** Power user features and optimizations
 
 #### Tasks:
@@ -181,7 +185,7 @@ Build a lightweight, privacy-focused activity tracker that runs entirely locally
 
 ---
 
-### 🚀 Phase 6: Polish & Release
+### Phase 6: Polish & Release
 **Goal:** Production-ready application
 
 #### Tasks:
@@ -209,7 +213,7 @@ Build a lightweight, privacy-focused activity tracker that runs entirely locally
   - [ ] Issue templates
   - [ ] Feature request process
 
-**Deliverable:** v1.0 Release
+**Deliverable:** Tempo v1.0 - Production Release
 
 ---
 
@@ -224,36 +228,36 @@ Build a lightweight, privacy-focused activity tracker that runs entirely locally
 | Phase 5 | 1 week | Week 6 |
 | Phase 6 | 1 week | Week 7 |
 
-**Total: 7 weeks to v1.0**
+**Total: 7 weeks to Tempo v1.0**
 
 ## Success Metrics
 
 ### Performance Targets
-- ✅ < 10MB RAM usage
-- ✅ < 0.1% CPU usage
-- ✅ < 50MB database for 1 year of data
-- ✅ < 1 second startup time
-- ✅ Zero network connections
+- [ ] < 10MB RAM usage
+- [ ] < 0.1% CPU usage
+- [ ] < 50MB database for 1 year of data
+- [ ] < 1 second startup time
+- [ ] Zero network connections
 
 ### Feature Targets
-- ✅ Track 95%+ of active computer time
-- ✅ Accurate categorization for top 100 apps
-- ✅ Generate reports in < 1 second
-- ✅ Export 1 year of data in < 10 seconds
+- [ ] Track 95%+ of active computer time
+- [ ] Accurate categorization for top 100 apps
+- [ ] Generate reports in < 1 second
+- [ ] Export 1 year of data in < 10 seconds
 
 ### User Experience Targets
-- ✅ Install in < 1 minute
-- ✅ Understand UI without documentation
-- ✅ Access any data in < 3 clicks
-- ✅ Zero configuration required to start
+- [ ] Install in < 1 minute
+- [ ] Understand UI without documentation
+- [ ] Access any data in < 3 clicks
+- [ ] Zero configuration required to start
 
-## Current Status: 📍 Phase 1 - Building Core Engine
+## Current Status: Phase 1 - Building Core Engine
 
-### Next Steps:
-1. Set up Python project with minimal dependencies
+### Next Steps for Tempo:
+1. Set up Python project structure for Tempo
 2. Implement basic window tracking for current OS
-3. Create SQLite schema and test data persistence
-4. Build simple CLI for start/stop/status
+3. Create SQLite schema for tempo.db
+4. Build Tempo CLI for start/stop/status commands
 
 ---
 
