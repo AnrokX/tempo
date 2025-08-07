@@ -40,20 +40,20 @@ setup(
     ],
     extras_require={
         "dev": [
-            "pytest>=7.4.0",
-            "pytest-cov>=4.1.0",
-            "pytest-mock>=3.11.0",
-            "pytest-xdist>=3.3.0",
+            "pytest>=7.0.0",
+            "pytest-cov>=4.0.0",
+            "pytest-mock>=3.10.0",
+            "pytest-xdist>=3.0.0",
             "pytest-watch>=4.2.0",
             "freezegun>=1.2.0",
-            "factory-boy>=3.3.0",
-            "psutil>=5.9.0",
+            "factory-boy>=3.2.0",
+            "psutil>=5.8.0",
         ],
         "windows": [
-            "pywin32>=305",
+            "pywin32>=300; sys_platform == 'win32'",
         ],
         "linux": [
-            "python-xlib>=0.33",
+            "python-xlib>=0.31; sys_platform == 'linux'",
         ],
     },
     entry_points={
