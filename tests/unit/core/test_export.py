@@ -1,135 +1,278 @@
 """
-Unit tests for Export functionality.
-Following TDD: Red-Green-Refactor cycle.
+Tests for the export module.
 """
 import pytest
 import csv
 import json
 from pathlib import Path
+from unittest.mock import Mock, patch, MagicMock
 import tempfile
 import time
-from datetime import datetime
+
+from src.core.export import DataExporter
 
 
-class TestExporter:
-    """Test suite for Exporter class."""
+class TestDataExporter:
+    """Test suite for DataExporter class."""
     
-    def test_exporter_can_be_initialized(self):
-        """Test that Exporter can be created."""
-        from src.core.export import Exporter
-        
-        exporter = Exporter()
-        
-        assert exporter is not None
+    def test_exporter_initialization(self):
+        """Test that exporter initializes correctly."""
+        db_path = Path("/tmp/test.db")
+        exporter = DataExporter(db_path)
+        assert exporter.db_path == db_path
     
-    def test_exporter_exports_sessions_to_csv(self, temp_database):
-        """Test exporting sessions data to CSV format."""
-        from src.core.export import Exporter
-        from src.core.database import Database
+    def test_export_to_csv_creates_file(self, tmp_path):
+        """Test that CSV export creates a file."""
+        db_path = Path("/tmp/test.db")
+        exporter = DataExporter(db_path)
         
-        # Arrange - Set up test data
-        db = Database(temp_database)
-        db.initialize()
+        output_file = tmp_path / "export.csv"
         
-        # Add some test sessions
-        app_id = db.save_application("firefox", "neutral")
-        now = time.time()
-        db.save_session(app_id, now - 3600, now - 3000)
-        db.save_session(app_id, now - 2000, now - 1000)
+        # Mock database data
+        mock_data = [
+            {
+                'app_name': 'Visual Studio Code',
+                'category': 'productive',
+                'start_time': 1704067200,
+                'end_time': 1704070800,
+                'duration': 3600
+            },
+            {
+                'app_name': 'Firefox',
+                'category': 'neutral',
+                'start_time': 1704070800,
+                'end_time': 1704072600,
+                'duration': 1800
+            }
+        ]
         
-        exporter = Exporter(db)
+        with patch.object(exporter, '_get_sessions_data', return_value=mock_data):
+            result = exporter.export_to_csv(output_file)
         
-        # Act - Export to CSV
-        with tempfile.NamedTemporaryFile(mode='w+', suffix='.csv', delete=False) as tmp:
-            csv_path = Path(tmp.name)
-        
-        result = exporter.export_to_csv(csv_path, now - 4000, now)
-        
-        # Assert - Verify the CSV was created and has correct data
         assert result is True
-        assert csv_path.exists()
+        assert output_file.exists()
+    
+    def test_csv_export_content(self, tmp_path):
+        """Test that CSV export contains correct data."""
+        db_path = Path("/tmp/test.db")
+        exporter = DataExporter(db_path)
         
-        # Read and verify CSV contents
-        with open(csv_path, 'r') as f:
+        output_file = tmp_path / "export.csv"
+        
+        mock_data = [
+            {
+                'app_name': 'Visual Studio Code',
+                'category': 'productive',
+                'start_time': 1704067200,
+                'end_time': 1704070800,
+                'duration': 3600
+            }
+        ]
+        
+        with patch.object(exporter, '_get_sessions_data', return_value=mock_data):
+            exporter.export_to_csv(output_file)
+        
+        # Read and verify CSV content
+        with open(output_file, 'r') as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-            
-            assert len(rows) == 2
-            assert 'app_name' in rows[0]
-            assert 'category' in rows[0]
-            assert 'start_time' in rows[0]
-            assert 'end_time' in rows[0]
-            assert 'duration' in rows[0]
-            
-            assert rows[0]['app_name'] == 'firefox'
-            assert rows[0]['category'] == 'neutral'
         
-        # Cleanup
-        csv_path.unlink()
+        assert len(rows) == 1
+        assert rows[0]['app_name'] == 'Visual Studio Code'
+        assert rows[0]['category'] == 'productive'
+        assert rows[0]['duration'] == '3600'
     
-    def test_exporter_handles_empty_data_csv(self, temp_database):
-        """Test CSV export with no sessions returns empty file with headers."""
-        from src.core.export import Exporter
-        from src.core.database import Database
+    def test_export_to_json_creates_file(self, tmp_path):
+        """Test that JSON export creates a file."""
+        db_path = Path("/tmp/test.db")
+        exporter = DataExporter(db_path)
         
-        # Arrange
-        db = Database(temp_database)
-        db.initialize()
-        exporter = Exporter(db)
+        output_file = tmp_path / "export.json"
         
-        with tempfile.NamedTemporaryFile(mode='w+', suffix='.csv', delete=False) as tmp:
-            csv_path = Path(tmp.name)
+        mock_data = [
+            {
+                'app_name': 'Visual Studio Code',
+                'category': 'productive',
+                'start_time': 1704067200,
+                'end_time': 1704070800,
+                'duration': 3600
+            }
+        ]
         
-        # Act
-        now = time.time()
-        result = exporter.export_to_csv(csv_path, now - 3600, now)
+        with patch.object(exporter, '_get_sessions_data', return_value=mock_data):
+            result = exporter.export_to_json(output_file)
         
-        # Assert
         assert result is True
-        assert csv_path.exists()
+        assert output_file.exists()
+    
+    def test_json_export_content(self, tmp_path):
+        """Test that JSON export contains correct data."""
+        db_path = Path("/tmp/test.db")
+        exporter = DataExporter(db_path)
         
-        with open(csv_path, 'r') as f:
+        output_file = tmp_path / "export.json"
+        
+        mock_data = [
+            {
+                'app_name': 'Firefox',
+                'category': 'neutral',
+                'start_time': 1704070800,
+                'end_time': 1704072600,
+                'duration': 1800
+            }
+        ]
+        
+        with patch.object(exporter, '_get_sessions_data', return_value=mock_data):
+            exporter.export_to_json(output_file)
+        
+        # Read and verify JSON content
+        with open(output_file, 'r') as f:
+            data = json.load(f)
+        
+        assert 'sessions' in data
+        assert len(data['sessions']) == 1
+        assert data['sessions'][0]['app_name'] == 'Firefox'
+        assert data['sessions'][0]['duration'] == 1800
+    
+    def test_export_with_date_filter(self, tmp_path):
+        """Test export with date range filter."""
+        db_path = Path("/tmp/test.db")
+        exporter = DataExporter(db_path)
+        
+        output_file = tmp_path / "filtered.csv"
+        start_date = 1704067200  # 2024-01-01
+        end_date = 1704153600    # 2024-01-02
+        
+        mock_data = [
+            {
+                'app_name': 'VS Code',
+                'category': 'productive',
+                'start_time': 1704067200,
+                'end_time': 1704070800,
+                'duration': 3600
+            }
+        ]
+        
+        with patch.object(exporter, '_get_sessions_data', return_value=mock_data) as mock_get:
+            exporter.export_to_csv(output_file, start_date=start_date, end_date=end_date)
+            mock_get.assert_called_once_with(start_date, end_date)
+    
+    def test_backup_database(self, tmp_path):
+        """Test database backup functionality."""
+        # Create a temporary source database
+        source_db = tmp_path / "source.db"
+        source_db.write_text("fake database content")
+        
+        exporter = DataExporter(source_db)
+        backup_path = tmp_path / "backup.db"
+        
+        result = exporter.backup_database(backup_path)
+        
+        assert result is True
+        assert backup_path.exists()
+        assert backup_path.read_text() == "fake database content"
+    
+    def test_restore_database(self, tmp_path):
+        """Test database restore functionality."""
+        # Create backup file
+        backup_db = tmp_path / "backup.db"
+        backup_db.write_text("backup content")
+        
+        # Target database
+        target_db = tmp_path / "target.db"
+        
+        exporter = DataExporter(target_db)
+        result = exporter.restore_database(backup_db)
+        
+        assert result is True
+        assert target_db.exists()
+        assert target_db.read_text() == "backup content"
+    
+    def test_export_summary_report(self, tmp_path):
+        """Test exporting a summary report."""
+        db_path = Path("/tmp/test.db")
+        exporter = DataExporter(db_path)
+        
+        output_file = tmp_path / "summary.json"
+        
+        mock_summary = {
+            'total_time': 7200,
+            'productive_time': 5400,
+            'neutral_time': 1200,
+            'distracting_time': 600,
+            'productivity_score': 75,
+            'top_apps': [
+                {'name': 'VS Code', 'duration': 5400},
+                {'name': 'Firefox', 'duration': 1200}
+            ]
+        }
+        
+        with patch.object(exporter, '_generate_summary', return_value=mock_summary):
+            result = exporter.export_summary(output_file)
+        
+        assert result is True
+        assert output_file.exists()
+        
+        with open(output_file, 'r') as f:
+            data = json.load(f)
+        
+        assert data['productivity_score'] == 75
+        assert data['total_time'] == 7200
+    
+    def test_anonymize_export(self, tmp_path):
+        """Test data anonymization during export."""
+        db_path = Path("/tmp/test.db")
+        exporter = DataExporter(db_path)
+        
+        output_file = tmp_path / "anonymous.csv"
+        
+        mock_data = [
+            {
+                'app_name': 'Visual Studio Code',
+                'category': 'productive',
+                'start_time': 1704067200,
+                'end_time': 1704070800,
+                'duration': 3600
+            }
+        ]
+        
+        with patch.object(exporter, '_get_sessions_data', return_value=mock_data):
+            with patch.object(exporter, '_anonymize_app_name', return_value='App_001'):
+                exporter.export_to_csv(output_file, anonymize=True)
+        
+        with open(output_file, 'r') as f:
             reader = csv.DictReader(f)
             rows = list(reader)
-            assert len(rows) == 0  # No data rows
-            assert reader.fieldnames is not None  # But headers exist
         
-        # Cleanup
-        csv_path.unlink()
+        assert rows[0]['app_name'] == 'App_001'
     
-    def test_exporter_formats_csv_timestamps_correctly(self, temp_database):
-        """Test that timestamps in CSV export are human-readable."""
-        from src.core.export import Exporter
-        from src.core.database import Database
+    def test_export_handles_empty_data(self, tmp_path):
+        """Test export handles empty dataset gracefully."""
+        db_path = Path("/tmp/test.db")
+        exporter = DataExporter(db_path)
         
-        # Arrange
-        db = Database(temp_database)
-        db.initialize()
+        output_file = tmp_path / "empty.csv"
         
-        app_id = db.save_application("vscode", "productive")
-        start_time = 1640995200.0  # Known timestamp: 2022-01-01 00:00:00 UTC
-        end_time = start_time + 3600  # 1 hour later
-        db.save_session(app_id, start_time, end_time)
+        with patch.object(exporter, '_get_sessions_data', return_value=[]):
+            result = exporter.export_to_csv(output_file)
         
-        exporter = Exporter(db)
-        
-        with tempfile.NamedTemporaryFile(mode='w+', suffix='.csv', delete=False) as tmp:
-            csv_path = Path(tmp.name)
-        
-        # Act
-        result = exporter.export_to_csv(csv_path, start_time - 100, end_time + 100)
-        
-        # Assert
         assert result is True
+        assert output_file.exists()
         
-        with open(csv_path, 'r') as f:
-            reader = csv.DictReader(f)
-            row = next(reader)
-            
-            # Check that timestamps are formatted as readable dates
-            assert '2022-01-01' in row['start_time']
-            assert '2022-01-01' in row['end_time']
-            assert row['duration'] == '3600.0'  # Should be in seconds
+        with open(output_file, 'r') as f:
+            reader = csv.reader(f)
+            rows = list(reader)
         
-        # Cleanup
-        csv_path.unlink()
+        assert len(rows) == 1  # Only header row
+    
+    def test_export_handles_invalid_path(self):
+        """Test export handles invalid output path."""
+        db_path = Path("/tmp/test.db")
+        exporter = DataExporter(db_path)
+        
+        invalid_path = Path("/invalid/path/export.csv")
+        
+        with patch.object(exporter, '_get_sessions_data', return_value=[]):
+            result = exporter.export_to_csv(invalid_path)
+        
+        assert result is False
