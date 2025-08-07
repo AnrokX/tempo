@@ -1,0 +1,18 @@
+# Core dependencies for Tempo
+# Keeping it minimal and lightweight
+
+# Database
+# SQLite3 is included in Python standard library
+
+# Platform-specific window tracking (installed conditionally)
+# Windows: pywin32
+# Linux: python-xlib or pyautogui
+
+# CLI framework
+click>=8.1.0
+
+# Configuration management
+pyyaml>=6.0
+
+# For development
+python-dotenv>=1.0.0
